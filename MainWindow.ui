@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #1B262C;
+}
+
+QMenuBar {
+    background-color: #0F4C75;
+    color: white;
+}
+
+QMenuBar::item:selected {
+    background-color: #3282B8;
+}
+
+QMenu {
+    background-color: #0F4C75;
+    color: white;
+}
+
+QMenu::item:selected {
+    background-color: #3282B8;
+}
+
+QPushButton {
+    background-color: #3282B8;
+    color: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #BBE1FA;
+    color: #1B262C;
+}
+
+QLineEdit {
+    background-color: #BBE1FA;
+    color: #1B262C;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+QTextEdit {
+    background-color: #BBE1FA;
+    color: #1B262C;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+QLabel {
+    color: white;
+}
+
+QListView {
+    background-color: #BBE1FA;
+    color: #1B262C;
+}
+
+QListView::item:selected {
+    background-color: #3282B8;
+    color: white;
+}
+
+QTabWidget::pane {
+    border-top: 2px solid #0F4C75;
+}
+
+QTabWidget::tab-bar {
+    background-color: #0F4C75;
+}
+
+QTabBar::tab {
+    background-color: #0F4C75;
+    color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 5px 10px;
+}
+
+QTabBar::tab:selected {
+    background-color: #3282B8;
+}
+
+QScrollBar:vertical {
+    background-color: #0F4C75;
+    width: 10px;
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #3282B8;
+    border-radius: 5px;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical {
+    background-color: #0F4C75;
+    height: 10px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    background-color: #0F4C75;
+    height: 10px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+
+QLabel {
+    color: white;
+}
+
+QDoubleSpinBox {
+    background-color: #BBE1FA;
+    color: #1B262C;
+}
+
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTextBrowser" name="textBrowser">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>140</y>
+      <width>561</width>
+      <height>401</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>30</y>
+      <width>181</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Минимальшая ширина:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>60</y>
+      <width>181</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Максимальная ширина:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>90</y>
+      <width>181</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Минимальная долгота:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>120</y>
+      <width>181</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Максимальная долгота:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="doubleSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>20</y>
+      <width>65</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>50</y>
+      <width>65</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>80</y>
+      <width>65</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>110</y>
+      <width>65</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
