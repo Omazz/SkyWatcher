@@ -29,5 +29,5 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::setText(QString text)
 {
-    ui->textBrowser->setText(text);
+    //ui->textBrowser->setText(text);
 }
