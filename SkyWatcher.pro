@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     AuthorizationForm.cpp \
+    MapView.cpp \
     OpenSkyAPI.cpp \
     main.cpp \
     MainWindow.cpp
@@ -17,6 +18,7 @@ SOURCES += \
 HEADERS += \
     AuthorizationForm.h \
     MainWindow.h \
+    MapView.h \
     OpenSkyAPI.h
 
 FORMS += \
@@ -29,4 +31,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    Recources/Map.png \
     Recources/SkyWatcherIcon.ico

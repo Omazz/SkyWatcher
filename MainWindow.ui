@@ -11,21 +11,21 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>880</width>
-    <height>575</height>
+    <width>199</width>
+    <height>199</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>880</width>
-    <height>575</height>
+    <width>100000</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
     background-color: #1B262C;
 }
 
-QLabel {
+QGraphicsView {
     color: #BBE1FA;
 	border: 1px solid #3282B8;
 }
@@ -84,15 +84,27 @@ QStatusBar {
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>880</width>
+     <height>530</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>880</width>
+     <height>530</height>
+    </size>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0" rowspan="2">
-     <widget class="QLabel" name="L_mainMap">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="MapView" name="GV_mainMap">
       <property name="minimumSize">
        <size>
         <width>512</width>
@@ -105,19 +117,16 @@ QStatusBar {
         <height>512</height>
        </size>
       </property>
-      <property name="text">
-       <string/>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QLabel" name="label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="MapView" name="GV_overviewMap">
       <property name="minimumSize">
        <size>
         <width>128</width>
@@ -130,8 +139,11 @@ QStatusBar {
         <height>128</height>
        </size>
       </property>
-      <property name="text">
-       <string/>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
      </widget>
     </item>
@@ -218,6 +230,13 @@ QStatusBar {
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MapView</class>
+   <extends>QGraphicsView</extends>
+   <header>MapView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
