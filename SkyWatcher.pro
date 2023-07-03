@@ -9,17 +9,19 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    AircraftRequester.cpp \
     AuthorizationForm.cpp \
+    MapRequester.cpp \
     MapView.cpp \
-    OpenSkyAPI.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
+    AircraftRequester.h \
     AuthorizationForm.h \
     MainWindow.h \
-    MapView.h \
-    OpenSkyAPI.h
+    MapRequester.h \
+    MapView.h
 
 FORMS += \
     AuthorizationForm.ui \

@@ -1,24 +1,27 @@
-#ifndef OPENSKYAPI_H
-#define OPENSKYAPI_H
+#ifndef MAPREQUESTER_H
+#define MAPREQUESTER_H
 
 #include <QObject>
+#include <QImage>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QByteArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPixmap>
+#include <QtCore>
 
-
-class OpenSkyAPI : public QObject
+class MapRequester : public QObject
 {
     Q_OBJECT
 public:
-    explicit OpenSkyAPI(QObject *parent = nullptr);
+    explicit MapRequester(QObject *parent = nullptr);
 
-    void getStatesInField(qreal latitudeMin, qreal latitudeMax, qreal longitudeMin, qreal longitudeMax);
+    ~MapRequester();
 
-    ~OpenSkyAPI();
+public slots:
+    void onClickOnField(quint8 zoomLevel, qreal x, qreal y);
 
 private slots:
     void readData();
@@ -28,12 +31,16 @@ private slots:
 signals:
     void updateData(QString data);
 
+    void updateMap(QPixmap map, quint8 x, quint8 y);
+
 private:
     void clearValues();
+
+    quint8 m_argX, m_argY;
 
     QNetworkAccessManager *netManager;
     QNetworkReply *netReply;
     QByteArray dataBuffer;
 };
 
-#endif // OPENSKYAPI_H
+#endif // MAPREQUESTER_H

@@ -4,7 +4,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include "OpenSkyAPI.h"
+#include "MapRequester.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QJsonDocument>
@@ -26,6 +26,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    const static quint16 MAIN_MAP_SIZE = 512;
+    const static quint16 OVERVIEW_MAP_SIZE = 128;
+
     MainWindow(QWidget *parent = nullptr);
 
     ~MainWindow();
@@ -35,15 +38,26 @@ private slots:
 
     void setText(QString text);
 
+    void onUpdateMap(QPixmap map, quint8 x, quint8 y);
+
+    void onChangeMapToMain();
+
+    void on_SB_zoomLevel_valueChanged(int arg1);
+
 private:
+    void drawFields();
+
     Ui::MainWindow* ui;
-    OpenSkyAPI* m_openSkyAPI;
+    MapRequester* m_mapRequester = nullptr;
 
-    QGraphicsScene* m_mainMapScene;
-    QGraphicsPixmapItem* m_mainMapImage;
+    QGraphicsScene* m_mainMapScene = nullptr;
+    QGraphicsPixmapItem* m_mainMapImage = nullptr;
+    QGraphicsPixmapItem* m_fieldMapImage = nullptr;
+    QList<QGraphicsLineItem*> m_lines;
 
-    QGraphicsScene* m_overviewMapScene;
-    QGraphicsPixmapItem* m_overviewMapImage;
+    QGraphicsScene* m_overviewMapScene = nullptr;
+    QGraphicsPixmapItem* m_overviewMapImage = nullptr;
+    QGraphicsRectItem* m_fieldRect = nullptr;
 };
 
 
