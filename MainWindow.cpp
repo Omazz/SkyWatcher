@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     m_mapRequester = new MapRequester(this);
     connect(m_mapRequester, &MapRequester::updateData, this, &MainWindow::setText);
+    m_aircraftRequester = new AircraftRequester(this);
 
     m_mainMapScene = new QGraphicsScene(this);
     ui->GV_mainMap->setMain();
@@ -34,17 +35,16 @@ MainWindow::MainWindow(QWidget *parent)
     m_overviewMapScene->addItem(m_fieldRect);
 
     connect(ui->GV_mainMap, &MapView::clickOnField, m_mapRequester, &MapRequester::onClickOnField);
+    connect(ui->GV_mainMap, &MapView::clickOnField, m_aircraftRequester, &AircraftRequester::onClickOnField);
     connect(ui->GV_mainMap, &MapView::changeMapToMain, this, &MainWindow::onChangeMapToMain);
     connect(m_mapRequester, &MapRequester::updateMap, this, &MainWindow::onUpdateMap);
+    connect(m_aircraftRequester, &AircraftRequester::updateAircrafts, this, &MainWindow::onUpdateAircrafts);
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::on_pushButton_clicked() {
-
-}
 
 void MainWindow::setText(QString text) {
     //ui->textBrowser->setText(text);
@@ -65,6 +65,29 @@ void MainWindow::onUpdateMap(QPixmap map, quint8 x, quint8 y) {
     m_fieldRect->setPen(QPen(Qt::red));
     m_overviewMapScene->addItem(m_fieldRect);
     m_mainMapScene->addItem(m_fieldMapImage);
+}
+
+void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
+    ui->TW_airplanes->clear();
+    ui->TW_airplanes->setRowCount(aircrafts.size());
+    ui->TW_airplanes->setColumnCount(2);
+    ui->TW_airplanes->setHorizontalHeaderItem(0, new QTableWidgetItem("ICAO 24"));
+    ui->TW_airplanes->setHorizontalHeaderItem(1, new QTableWidgetItem("Country"));
+    for(int i = 0; i < aircrafts.size(); ++i) {
+        QTableWidgetItem* icaoItem = new QTableWidgetItem(aircrafts[i].icao24);
+        icaoItem->setFlags(icaoItem->flags() & ~Qt::ItemIsEditable);
+        icaoItem->setFlags(icaoItem->flags() & ~Qt::ItemIsSelectable);
+
+        QTableWidgetItem* originCountryItem = new QTableWidgetItem(aircrafts[i].origin_country);
+        originCountryItem->setFlags(originCountryItem->flags() & ~Qt::ItemIsEditable);
+        originCountryItem->setFlags(originCountryItem->flags() & ~Qt::ItemIsSelectable);
+
+        ui->TW_airplanes->setItem(i, 0, icaoItem);
+        ui->TW_airplanes->setItem(i, 1, originCountryItem);
+        ui->TW_airplanes->verticalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
+    }
+    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 }
 
 void MainWindow::onChangeMapToMain() {
@@ -120,5 +143,11 @@ void MainWindow::drawFields() {
         m_mainMapScene->addItem(rowLine);
         m_mainMapScene->addItem(columnLine);
     }
+}
+
+
+void MainWindow::on_PB_authorization_clicked()
+{
+    m_aircraftRequester->onAuthorization("lll123321", "lll123321");
 }
 

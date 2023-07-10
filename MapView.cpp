@@ -81,6 +81,4 @@ void MapView::mouseReleaseEvent(QMouseEvent* event) {
     QPointF clickPos = mapToScene(event->pos());
 
     emit clickOnField(m_zoomLevel, clickPos.x(), clickPos.y());
-    //qDebug() << clickPos.x() << clickPos.y();
-
 }

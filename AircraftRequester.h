@@ -2,10 +2,44 @@
 #define AIRCRAFTREQUESTER_H
 
 
-class AircraftRequester
+#include <QObject>
+#include <QImage>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QPixmap>
+#include <QtCore>
+#include "GeoCalculator.h"
+#include "Aircraft.h"
+
+class AircraftRequester : public QObject
 {
+    Q_OBJECT
 public:
-    AircraftRequester();
+    explicit AircraftRequester(QObject *parent = nullptr);
+
+    ~AircraftRequester();
+
+    void onAuthorization(QString login, QString password);
+
+public slots:
+    void onClickOnField(quint8 zoomLevel, qreal x, qreal y);
+
+private slots:
+    void readData();
+
+    void finishReading();
+
+signals:
+    void updateAircrafts(QVector<Aircraft> aircrafts);
+
+private:
+    QNetworkAccessManager *netManager;
+    QNetworkReply *netReply;
+    QByteArray dataBuffer;
 };
 
 #endif // AIRCRAFTREQUESTER_H

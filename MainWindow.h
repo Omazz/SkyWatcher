@@ -5,6 +5,7 @@
 
 #include <QMainWindow>
 #include "MapRequester.h"
+#include "AircraftRequester.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QJsonDocument>
@@ -34,21 +35,25 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_clicked();
-
     void setText(QString text);
 
     void onUpdateMap(QPixmap map, quint8 x, quint8 y);
 
+    void onUpdateAircrafts(QVector<Aircraft> aircrafts);
+
     void onChangeMapToMain();
 
     void on_SB_zoomLevel_valueChanged(int arg1);
+
+    void on_PB_authorization_clicked();
 
 private:
     void drawFields();
 
     Ui::MainWindow* ui;
     MapRequester* m_mapRequester = nullptr;
+    AircraftRequester* m_aircraftRequester = nullptr;
+
 
     QGraphicsScene* m_mainMapScene = nullptr;
     QGraphicsPixmapItem* m_mainMapImage = nullptr;

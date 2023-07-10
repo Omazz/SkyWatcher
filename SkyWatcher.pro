@@ -17,8 +17,10 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    Aircraft.h \
     AircraftRequester.h \
     AuthorizationForm.h \
+    GeoCalculator.h \
     MainWindow.h \
     MapRequester.h \
     MapView.h

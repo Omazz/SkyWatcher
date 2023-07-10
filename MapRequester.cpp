@@ -25,8 +25,6 @@ void MapRequester::onClickOnField(quint8 zoomLevel, qreal x, qreal y) {
     m_argY = y / 512. * qPow(2, zoomLevel);
     qDebug() << zoomLevel << m_argX << m_argY;
 
-    //QNetworkRequest req{QUrl(QString("https://mt0.google.com/vt/lyrs=m&x=4&y=4&z=4"))};
-
     QNetworkRequest req{QUrl(QString("https://mt0.google.com/vt/lyrs=m&x=%1&y=%2&z=%3").arg(m_argX).arg(m_argY).arg(zoomLevel))};
 
     netReply = netManager->get(req);
