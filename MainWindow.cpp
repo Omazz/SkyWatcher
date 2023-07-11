@@ -34,6 +34,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_fieldRect->setPen(QPen(Qt::red));
     m_overviewMapScene->addItem(m_fieldRect);
 
+    ui->TW_airplanes->setSelectionMode(QAbstractItemView::NoSelection);
+    ui->TW_airplanes->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     connect(ui->GV_mainMap, &MapView::clickOnField, m_mapRequester, &MapRequester::onClickOnField);
     connect(ui->GV_mainMap, &MapView::clickOnField, m_aircraftRequester, &AircraftRequester::onClickOnField);
     connect(ui->GV_mainMap, &MapView::changeMapToMain, this, &MainWindow::onChangeMapToMain);
@@ -70,24 +73,34 @@ void MainWindow::onUpdateMap(QPixmap map, quint8 x, quint8 y) {
 void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
     ui->TW_airplanes->clear();
     ui->TW_airplanes->setRowCount(aircrafts.size());
-    ui->TW_airplanes->setColumnCount(2);
+    ui->TW_airplanes->setColumnCount(3);
     ui->TW_airplanes->setHorizontalHeaderItem(0, new QTableWidgetItem("ICAO 24"));
     ui->TW_airplanes->setHorizontalHeaderItem(1, new QTableWidgetItem("Country"));
+    ui->TW_airplanes->setHorizontalHeaderItem(2, new QTableWidgetItem("Info"));
     for(int i = 0; i < aircrafts.size(); ++i) {
         QTableWidgetItem* icaoItem = new QTableWidgetItem(aircrafts[i].icao24);
-        icaoItem->setFlags(icaoItem->flags() & ~Qt::ItemIsEditable);
-        icaoItem->setFlags(icaoItem->flags() & ~Qt::ItemIsSelectable);
 
         QTableWidgetItem* originCountryItem = new QTableWidgetItem(aircrafts[i].origin_country);
-        originCountryItem->setFlags(originCountryItem->flags() & ~Qt::ItemIsEditable);
-        originCountryItem->setFlags(originCountryItem->flags() & ~Qt::ItemIsSelectable);
 
         ui->TW_airplanes->setItem(i, 0, icaoItem);
         ui->TW_airplanes->setItem(i, 1, originCountryItem);
+
+        AircraftInfoButton* aircraftInfoButton = new AircraftInfoButton();
+        aircraftInfoButton->setAircraft(aircrafts[i]);
+        aircraftInfoButton->setText("?");
+        connect(aircraftInfoButton, &QPushButton::clicked, [&]() {
+            AircraftInfoDialog* dialog = new AircraftInfoDialog(this);
+            dialog->setAircraftInfo(aircraftInfoButton->getAircraft());
+            dialog->show();
+        });
+
+        ui->TW_airplanes->setCellWidget(i, 2, aircraftInfoButton);
         ui->TW_airplanes->verticalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
     }
     ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+
 }
 
 void MainWindow::onChangeMapToMain() {

@@ -4,6 +4,8 @@
 #include <QString>
 #include <QVector>
 
+const static quint8 NUMBER_PARAMETERS = 18;
+
 enum OriginOfPosition {
     Adsb = 0,
     ASTERIX,

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AircraftInfoDialog</class>
+ <widget class="QDialog" name="AircraftInfoDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>512</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background-color: #1B262C;
+}
+
+QScrollBar:vertical {
+	border: none;
+	background: #0F4C75;
+	width: 14px;
+	border-radius: 0px;
+}
+
+QHeaderView::section {
+    background-color: #0F4C75;
+    padding: 4px;
+    border: 1px solid #fffff8;
+    font-size: 14pt;
+	 color:  white;
+}
+
+QTableWidget {
+	background-color: #3282B8;
+    color: white;
+    gridline-color: #fffff8;
+    font-size: 12pt;
+}
+
+QTableWidget QTableCornerButton::section {
+    background-color:  #0F4C75;;
+    border: 1px solid #fffff8;
+}
+
+QLabel {
+    color: #BBE1FA;
+}
+
+QGraphicsView {
+    color: #BBE1FA;
+	border: 1px solid #3282B8;
+}
+
+QGroupBox {
+    background-color: #0F4C75;
+    color: white;
+    border: 1px solid #3282B8;
+}
+
+QPushButton {
+    background-color: #3282B8;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #BBE1FA;
+    color: #3282B8;
+}
+
+QCheckBox {
+    color: #BBE1FA;
+}
+
+QMenuBar {
+    background-color: #0F4C75;
+    color: white;
+}
+
+QStatusBar {
+    background-color: #0F4C75;
+    color: white;
+}
+
+QToolBar {
+    background-color: #0F4C75;
+    color: white;
+}
+
+QSpinBox {
+	background-color:#0F4C75;
+	color: white;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableWidget" name="TW_aircraftInfo"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>360</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="PB_ok">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Ok</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

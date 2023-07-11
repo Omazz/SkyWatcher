@@ -6,6 +6,8 @@
 #include <QMainWindow>
 #include "MapRequester.h"
 #include "AircraftRequester.h"
+#include "AircraftInfoDialog.h"
+#include "AircraftInfoButton.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QJsonDocument>

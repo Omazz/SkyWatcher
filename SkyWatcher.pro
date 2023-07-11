@@ -9,6 +9,8 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    AircraftInfoButton.cpp \
+    AircraftInfoDialog.cpp \
     AircraftRequester.cpp \
     AuthorizationForm.cpp \
     MapRequester.cpp \
@@ -18,6 +20,8 @@ SOURCES += \
 
 HEADERS += \
     Aircraft.h \
+    AircraftInfoButton.h \
+    AircraftInfoDialog.h \
     AircraftRequester.h \
     AuthorizationForm.h \
     GeoCalculator.h \
@@ -26,6 +30,7 @@ HEADERS += \
     MapView.h
 
 FORMS += \
+    AircraftInfoDialog.ui \
     AuthorizationForm.ui \
     MainWindow.ui
 
