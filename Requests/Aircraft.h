@@ -37,10 +37,10 @@ enum AircraftCategory {
 };
 
 struct Aircraft {
-    QString icao24;                 ///< Unique ICAO 24-bit address of the transponder in hex string representation.
-    QString callsign;               ///< Callsign of the vehicle (8 chars). Can be null if no callsign has been received.
+    QString icao24 = "";                 ///< Unique ICAO 24-bit address of the transponder in hex string representation.
+    QString callsign = "";               ///< Callsign of the vehicle (8 chars). Can be null if no callsign has been received.
     bool callsign_isNull = true;
-    QString origin_country;         ///< Country name inferred from the ICAO 24-bit address.
+    QString origin_country = "";         ///< Country name inferred from the ICAO 24-bit address.
     int time_position;                  ///< Unix timestamp (seconds) for the last position update.
     bool time_position_isNull = true;
     int last_contact;                   ///< Unix timestamp (seconds) for the last update in general.
@@ -60,7 +60,7 @@ struct Aircraft {
     QVector<int> sensors;           ///< IDs of the receivers which contributed to this state vector.
     float geo_altitude;                 ///< Geometric altitude in meters. Can be null.
     bool geo_altitude_isNull = true;
-    QString squawk;                 ///< The transponder code aka Squawk. Can be null.
+    QString squawk = "";                 ///< The transponder code aka Squawk. Can be null.
     bool squawk_isNull = true;
     bool spi;                           ///< Whether flight status indicates special purpose indicator.
     OriginOfPosition position_source;   ///< Origin of this state’s position.

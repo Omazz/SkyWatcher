@@ -8,14 +8,23 @@ MapRequester::MapRequester(QObject *parent)
     netReply = nullptr;
 }
 
-void MapRequester::clearValues()
-{
+void MapRequester::clearValues() {
     dataBuffer.clear();
 }
 
-
-MapRequester::~MapRequester()
+quint8 MapRequester::argY() const
 {
+    return m_argY;
+}
+
+quint8 MapRequester::argX() const
+{
+    return m_argX;
+}
+
+
+MapRequester::~MapRequester() {
+
 }
 
 

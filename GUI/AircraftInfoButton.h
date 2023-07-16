@@ -2,7 +2,7 @@
 #define AIRCRAFTINFOBUTTON_H
 
 #include <QPushButton>
-#include "Aircraft.h"
+#include "Requests/Aircraft.h"
 
 class AircraftInfoButton : public QPushButton
 {

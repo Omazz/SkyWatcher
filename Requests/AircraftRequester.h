@@ -12,7 +12,7 @@
 #include <QJsonObject>
 #include <QPixmap>
 #include <QtCore>
-#include "GeoCalculator.h"
+#include "PriFiles/GeographicCoordsHandler/GeographicCoordsHandler.h"
 #include "Aircraft.h"
 
 class AircraftRequester : public QObject
@@ -22,8 +22,6 @@ public:
     explicit AircraftRequester(QObject *parent = nullptr);
 
     ~AircraftRequester();
-
-    void onAuthorization(QString login, QString password);
 
 public slots:
     void onClickOnField(quint8 zoomLevel, qreal x, qreal y);

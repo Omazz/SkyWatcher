@@ -2,7 +2,7 @@
 #define AIRCRAFTINFODIALOG_H
 
 #include <QDialog>
-#include "Aircraft.h"
+#include "Requests/Aircraft.h"
 
 namespace Ui {
 class AircraftInfoDialog;
@@ -15,12 +15,19 @@ class AircraftInfoDialog : public QDialog
 public:
     explicit AircraftInfoDialog(QWidget *parent = nullptr);
 
-    void setAircraftInfo(Aircraft aircraft);
 
     ~AircraftInfoDialog();
 
+    void setAircraftInfo(const Aircraft& aircraft);
+
+
+private slots:
+    void on_PB_ok_clicked();
+
 private:
     Ui::AircraftInfoDialog *ui;
+
+    Aircraft m_aircraft;
 };
 
 #endif // AIRCRAFTINFODIALOG_H

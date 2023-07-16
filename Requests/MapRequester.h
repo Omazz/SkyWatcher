@@ -20,6 +20,10 @@ public:
 
     ~MapRequester();
 
+    quint8 argX() const;
+
+    quint8 argY() const;
+
 public slots:
     void onClickOnField(quint8 zoomLevel, qreal x, qreal y);
 

@@ -58,6 +58,9 @@ void MainWindow::onUpdateMap(QPixmap map, quint8 x, quint8 y) {
         return;
     }
 
+//    QPair<qreal, qreal> res = GeographicCoordsHandler::fromTilesToDegrees(x, y, ui->GV_mainMap->zoomLevel());
+//    qDebug() << res.first << res.second;
+
     ui->GV_mainMap->setIsField(true);
 
     m_fieldMapImage = new QGraphicsPixmapItem(map.scaled(MAIN_MAP_SIZE, MAIN_MAP_SIZE, Qt::KeepAspectRatio));
@@ -68,16 +71,64 @@ void MainWindow::onUpdateMap(QPixmap map, quint8 x, quint8 y) {
     m_fieldRect->setPen(QPen(Qt::red));
     m_overviewMapScene->addItem(m_fieldRect);
     m_mainMapScene->addItem(m_fieldMapImage);
+
 }
 
 void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
+    m_aircraftsItems.clear();
     ui->TW_airplanes->clear();
     ui->TW_airplanes->setRowCount(aircrafts.size());
     ui->TW_airplanes->setColumnCount(3);
     ui->TW_airplanes->setHorizontalHeaderItem(0, new QTableWidgetItem("ICAO 24"));
     ui->TW_airplanes->setHorizontalHeaderItem(1, new QTableWidgetItem("Country"));
     ui->TW_airplanes->setHorizontalHeaderItem(2, new QTableWidgetItem("Info"));
+
+
+    QPair<qreal, qreal> mapLeftTopPos = GeographicCoordsHandler::fromTilesToCartesian(m_mapRequester->argX(),
+                                                                                   m_mapRequester->argY(),
+                                                                                   ui->GV_mainMap->zoomLevel());
+    QPair<qreal, qreal> mapRightLowerPos = GeographicCoordsHandler::fromTilesToCartesian(m_mapRequester->argX() + 1,
+                                                                                         m_mapRequester->argY() + 1,
+                                                                                         ui->GV_mainMap->zoomLevel());
+
+    qDebug() << "\nMap left top point:\nx: " << static_cast<qint64>(mapLeftTopPos.first)
+             << "\ny: " << static_cast<qint64>(mapLeftTopPos.second);
+
+    qDebug() << "\nMap right lower point:\nx: " << static_cast<qint64>(mapRightLowerPos.first)
+             << "\ny: " << static_cast<qint64>(mapRightLowerPos.second);
+
+
     for(int i = 0; i < aircrafts.size(); ++i) {
+
+
+        if(!aircrafts[i].longitude_isNull && !aircrafts[i].latitude_isNull) {
+//            QPair<qreal, qreal> aircraftPoint = GeographicCoordsHandler::fromDegreesToCartesian(aircrafts[i].longitude,
+//                                                                                                aircrafts[i].latitude);
+//            if(((aircraftPoint.first < mapLeftTopPos.first) && (aircraftPoint.first > mapRightLowerPos.first)) &&
+//                ((aircraftPoint.second > mapLeftTopPos.second) && (aircraftPoint.second < mapRightLowerPos.second))) {
+//            }
+//            qreal difX = mapLeftTopPos.first - mapRightLowerPos.first;
+//            qreal difY = mapRightLowerPos.second - mapLeftTopPos.second;
+//            qreal mapX = (aircraftPoint.first - mapRightLowerPos.first) / difX * 512.0;
+//            qreal mapY = (aircraftPoint.second - mapLeftTopPos.second) / difY * 512.0;
+
+
+            QPair<qreal, qreal> aircraftPoint = GeographicCoordsHandler::fromDegreesToTiles(aircrafts[i].longitude,
+                                                                                            aircrafts[i].latitude,
+                                                                                            ui->GV_mainMap->zoomLevel());
+            qreal mapX = 512.0 * (aircraftPoint.first - floor(aircraftPoint.first));
+            qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
+
+            if(!m_aircraftsItems.contains(aircrafts[i].icao24)) {
+                m_aircraftsItems.insert(aircrafts[i].icao24, AircraftGraphicsItem(aircrafts[i].icao24));
+            }
+
+            m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
+            if(!aircrafts[i].true_track_isNull) {
+                m_aircraftsItems[aircrafts[i].icao24].setRotation(aircrafts[i].true_track);
+            }
+            m_mainMapScene->addItem(&m_aircraftsItems[aircrafts[i].icao24]);
+        }
         QTableWidgetItem* icaoItem = new QTableWidgetItem(aircrafts[i].icao24);
 
         QTableWidgetItem* originCountryItem = new QTableWidgetItem(aircrafts[i].origin_country);
@@ -88,11 +139,8 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
         AircraftInfoButton* aircraftInfoButton = new AircraftInfoButton();
         aircraftInfoButton->setAircraft(aircrafts[i]);
         aircraftInfoButton->setText("?");
-        connect(aircraftInfoButton, &QPushButton::clicked, [&]() {
-            AircraftInfoDialog* dialog = new AircraftInfoDialog(this);
-            dialog->setAircraftInfo(aircraftInfoButton->getAircraft());
-            dialog->show();
-        });
+
+        connect(aircraftInfoButton, &QPushButton::clicked, this, &MainWindow::createAircraftInfoDialog);
 
         ui->TW_airplanes->setCellWidget(i, 2, aircraftInfoButton);
         ui->TW_airplanes->verticalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
@@ -100,13 +148,16 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
     ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-
 }
 
 void MainWindow::onChangeMapToMain() {
     if(m_fieldMapImage == nullptr) {
         return;
     }
+
+    ui->TW_airplanes->clear();
+    ui->TW_airplanes->setColumnCount(0);
+    ui->TW_airplanes->setRowCount(0);
 
     m_overviewMapScene->removeItem(m_fieldRect);
     delete m_fieldRect;
@@ -158,9 +209,23 @@ void MainWindow::drawFields() {
     }
 }
 
+void MainWindow::createAircraftInfoDialog() {
+    QObject* senderObject = sender();
+    if (senderObject != nullptr) {
+        AircraftInfoButton* aircraftInfoButton = dynamic_cast<AircraftInfoButton*>(senderObject);
+        if (aircraftInfoButton != nullptr) {
+            m_aircraftInfoDialog = new AircraftInfoDialog(this);
+            m_aircraftInfoDialog->setAircraftInfo(aircraftInfoButton->getAircraft());
+            ui->TW_airplanes->setEnabled(false);
+            connect(m_aircraftInfoDialog, &QDialog::finished, this, &MainWindow::onAircraftInfoDialogFinished);
+            m_aircraftInfoDialog->show();
+        }
+    }
+}
 
-void MainWindow::on_PB_authorization_clicked()
-{
-    m_aircraftRequester->onAuthorization("lll123321", "lll123321");
+void MainWindow::onAircraftInfoDialogFinished(int result) {
+    Q_UNUSED(result);
+    ui->TW_airplanes->setEnabled(true);
+    m_aircraftInfoDialog = nullptr;
 }
 

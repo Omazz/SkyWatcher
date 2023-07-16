@@ -4,10 +4,13 @@
 #pragma once
 
 #include <QMainWindow>
-#include "MapRequester.h"
-#include "AircraftRequester.h"
-#include "AircraftInfoDialog.h"
-#include "AircraftInfoButton.h"
+#include "Requests/MapRequester.h"
+#include "Requests/AircraftRequester.h"
+#include "GUI/AircraftInfoDialog.h"
+#include "GUI/AircraftInfoButton.h"
+#include "GUI/AircraftGraphicsItem.h"
+#include "PriFiles/GeographicCoordsHandler/GeographicCoordsHandler.h"
+#include <QHash>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QJsonDocument>
@@ -47,7 +50,11 @@ private slots:
 
     void on_SB_zoomLevel_valueChanged(int arg1);
 
-    void on_PB_authorization_clicked();
+    void createAircraftInfoDialog();
+
+    void onAircraftInfoDialogFinished(int result);
+
+    void onClickOnAircraft(QString icao24);
 
 private:
     void drawFields();
@@ -65,6 +72,9 @@ private:
     QGraphicsScene* m_overviewMapScene = nullptr;
     QGraphicsPixmapItem* m_overviewMapImage = nullptr;
     QGraphicsRectItem* m_fieldRect = nullptr;
+
+    AircraftInfoDialog* m_aircraftInfoDialog = nullptr;
+    QHash<QString, AircraftGraphicsItem> m_aircraftsItems;
 };
 
 

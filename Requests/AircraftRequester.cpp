@@ -7,28 +7,9 @@ AircraftRequester::AircraftRequester(QObject *parent)
     netReply = nullptr;
 }
 
-AircraftRequester::~AircraftRequester()
-{
+AircraftRequester::~AircraftRequester() {
+
 }
-
-
-void AircraftRequester::onAuthorization(QString login, QString password) {
-
-    qDebug() << login << password;
-
-    QString url = "https://opensky-network.org/login?task=user.login";
-
-    QUrl apiUrl(url);
-    QNetworkRequest request(apiUrl);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    QString postData = QString("username=%1&password=%2").arg(login).arg(password);
-    netReply = netManager->post(request, postData.toUtf8());
-    connect(netReply,&QNetworkReply::readyRead,this,&AircraftRequester::readData);
-    connect(netReply,&QNetworkReply::finished,this,&AircraftRequester::finishReading);
-}
-
-
 
 void AircraftRequester::onClickOnField(quint8 zoomLevel, qreal x, qreal y) {
     int argX = x / 512 * qPow(2, zoomLevel);
@@ -36,17 +17,12 @@ void AircraftRequester::onClickOnField(quint8 zoomLevel, qreal x, qreal y) {
 
     qDebug() << argX << argY;
 
-    QPair<qreal, qreal> firstCoord = GeoCalculator::fromTilesToDegrees(argX, argY, zoomLevel);
-    QPair<qreal, qreal> secondCoord = GeoCalculator::fromTilesToDegrees(argX + 1, argY + 1, zoomLevel);
+    QPair<qreal, qreal> firstCoord = GeographicCoordsHandler::fromTilesToDegrees(argX, argY, zoomLevel);
+    QPair<qreal, qreal> secondCoord = GeographicCoordsHandler::fromTilesToDegrees(argX + 1, argY + 1, zoomLevel);
     qreal longitudeMin = firstCoord.first;
     qreal latitudeMax = firstCoord.second;
     qreal longitudeMax = secondCoord.first;
     qreal latitudeMin = secondCoord.second;
-
-//    qDebug() << "\nlongitude min: " << longitudeMin
-//             << "\nlatitude min: " << latitudeMin
-//             << "\nlongitude max: " << longitudeMax
-//             << "\nlatitude max: " << latitudeMax;
 
     QNetworkRequest req{QUrl(QString("https://opensky-network.org/api/states/all?lamin=%1&lomin=%2&lamax=%3&lomax=%4")
                              .arg(latitudeMin).arg(longitudeMin).arg(latitudeMax).arg(longitudeMax))};
@@ -71,11 +47,7 @@ void AircraftRequester::finishReading()
         //CONVERT THE DATA FROM A JSON DOC TO A JSON OBJECT
         QJsonObject jsonObject = QJsonDocument::fromJson(dataBuffer).object();
 
-        qDebug() << "time: " << jsonObject.value("time").toInt();
-
         QJsonArray jsonArray = jsonObject.value("states").toArray();
-
-        qDebug() << "size: " << jsonArray.size();
 
         QVector<Aircraft> aircrafts;
         aircrafts.reserve(jsonArray.size());
