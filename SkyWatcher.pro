@@ -12,6 +12,7 @@ SOURCES += \
     GUI/AircraftGraphicsItem.cpp \
     GUI/AircraftInfoButton.cpp \
     GUI/AircraftInfoDialog.cpp \
+    GUI/AircraftScene.cpp \
     GUI/MainWindow.cpp \
     GUI/MapView.cpp \
     Requests/AircraftRequester.cpp \
@@ -22,6 +23,7 @@ HEADERS += \
     GUI/AircraftGraphicsItem.h \
     GUI/AircraftInfoButton.h \
     GUI/AircraftInfoDialog.h \
+    GUI/AircraftScene.h \
     GUI/MainWindow.h \
     GUI/MapView.h \
     Requests/Aircraft.h \

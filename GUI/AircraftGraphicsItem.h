@@ -23,11 +23,8 @@ public:
 
     void operator =(const AircraftGraphicsItem& other);
 
-signals:
-    void clickOnAircaft(QString icao24);
 
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    const QString &icao24() const;
 
 private:
     QString m_icao24;

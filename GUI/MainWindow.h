@@ -10,8 +10,8 @@
 #include "GUI/AircraftInfoButton.h"
 #include "GUI/AircraftGraphicsItem.h"
 #include "PriFiles/GeographicCoordsHandler/GeographicCoordsHandler.h"
+#include "AircraftScene.h"
 #include <QHash>
-#include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -54,7 +54,7 @@ private slots:
 
     void onAircraftInfoDialogFinished(int result);
 
-    void onClickOnAircraft(QString icao24);
+    void onClickOnAircrafts(QVector<QString> aircrafts);
 
 private:
     void drawFields();
@@ -64,7 +64,7 @@ private:
     AircraftRequester* m_aircraftRequester = nullptr;
 
 
-    QGraphicsScene* m_mainMapScene = nullptr;
+    AircraftScene* m_mainMapScene = nullptr;
     QGraphicsPixmapItem* m_mainMapImage = nullptr;
     QGraphicsPixmapItem* m_fieldMapImage = nullptr;
     QList<QGraphicsLineItem*> m_lines;

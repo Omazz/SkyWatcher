@@ -116,6 +116,10 @@ QToolBar {
 QSpinBox {
 	background-color:#0F4C75;
 	color: white;
+}
+
+QTableWidget::item:selected {
+	background-color: green;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">

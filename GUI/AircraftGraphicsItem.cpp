@@ -55,10 +55,7 @@ void AircraftGraphicsItem::operator =(const AircraftGraphicsItem& other) {
     m_icao24 = other.m_icao24;
 }
 
-void AircraftGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    if (contains(event->pos())) {
-        emit clickOnAircaft(m_icao24);
-    }
-
-    QGraphicsItem::mousePressEvent(event);
+const QString &AircraftGraphicsItem::icao24() const
+{
+    return m_icao24;
 }

@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_mapRequester, &MapRequester::updateData, this, &MainWindow::setText);
     m_aircraftRequester = new AircraftRequester(this);
 
-    m_mainMapScene = new QGraphicsScene(this);
+    m_mainMapScene = new AircraftScene(this);
     ui->GV_mainMap->setMain();
     ui->GV_mainMap->setScene(m_mainMapScene);
 
@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->TW_airplanes->setSelectionMode(QAbstractItemView::NoSelection);
     ui->TW_airplanes->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    connect(m_mainMapScene, &AircraftScene::clickOnAircrafts, this, &MainWindow::onClickOnAircrafts);
     connect(ui->GV_mainMap, &MapView::clickOnField, m_mapRequester, &MapRequester::onClickOnField);
     connect(ui->GV_mainMap, &MapView::clickOnField, m_aircraftRequester, &AircraftRequester::onClickOnField);
     connect(ui->GV_mainMap, &MapView::changeMapToMain, this, &MainWindow::onChangeMapToMain);
@@ -102,16 +103,6 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
 
 
         if(!aircrafts[i].longitude_isNull && !aircrafts[i].latitude_isNull) {
-//            QPair<qreal, qreal> aircraftPoint = GeographicCoordsHandler::fromDegreesToCartesian(aircrafts[i].longitude,
-//                                                                                                aircrafts[i].latitude);
-//            if(((aircraftPoint.first < mapLeftTopPos.first) && (aircraftPoint.first > mapRightLowerPos.first)) &&
-//                ((aircraftPoint.second > mapLeftTopPos.second) && (aircraftPoint.second < mapRightLowerPos.second))) {
-//            }
-//            qreal difX = mapLeftTopPos.first - mapRightLowerPos.first;
-//            qreal difY = mapRightLowerPos.second - mapLeftTopPos.second;
-//            qreal mapX = (aircraftPoint.first - mapRightLowerPos.first) / difX * 512.0;
-//            qreal mapY = (aircraftPoint.second - mapLeftTopPos.second) / difY * 512.0;
-
 
             QPair<qreal, qreal> aircraftPoint = GeographicCoordsHandler::fromDegreesToTiles(aircrafts[i].longitude,
                                                                                             aircrafts[i].latitude,
@@ -229,3 +220,18 @@ void MainWindow::onAircraftInfoDialogFinished(int result) {
     m_aircraftInfoDialog = nullptr;
 }
 
+void MainWindow::onClickOnAircrafts(QVector<QString> aircrafts) {
+    for(int rowIndex = 0; rowIndex < ui->TW_airplanes->rowCount(); ++rowIndex) {
+        ui->TW_airplanes->item(rowIndex, 0)->setSelected(false);
+        ui->TW_airplanes->item(rowIndex, 1)->setSelected(false);
+
+        for(int aircraftIndex = 0; aircraftIndex < aircrafts.size(); ++aircraftIndex) {
+            if(aircrafts[aircraftIndex] == ui->TW_airplanes->item(rowIndex, 0)->text()) {
+                ui->TW_airplanes->item(rowIndex, 0)->setSelected(true);
+                ui->TW_airplanes->item(rowIndex, 1)->setSelected(true);
+                break;
+            }
+        }
+    }
+
+}
