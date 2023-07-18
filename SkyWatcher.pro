@@ -40,7 +40,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    Recources/LoadingScreen.jpg \
     Recources/Map.png \
     Recources/SkyWatcherIcon.ico
 
 include(PriFiles/GeographicCoordsHandler/geographicCoordsHandler.pri)
+include(PriFiles/LoadingScreen/loadingScreen.pri)

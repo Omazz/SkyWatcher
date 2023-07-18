@@ -10,6 +10,7 @@
 class AircraftScene : public QGraphicsScene
 {
     Q_OBJECT
+
 public:
     explicit AircraftScene(QObject *parent = nullptr);
 

@@ -1,6 +1,8 @@
 #include "GUI/MainWindow.h"
+#include "../PriFiles/LoadingScreen/AppLoadScreen.h"
 
 #include <QApplication>
+
 
 int main(int argc, char *argv[])
 {
@@ -8,6 +10,9 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.setWindowIcon(QIcon("../Recources/SkyWatcherIcon.ico"));
+    AppLoadScreen loadScreen(QPixmap("../Recources/LoadingScreen.jpg"));
+
+    loadScreen.showLoadingScreen(3000, &w);
     w.show();
 
     return a.exec();
