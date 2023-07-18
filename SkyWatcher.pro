@@ -16,6 +16,7 @@ SOURCES += \
     GUI/MainWindow.cpp \
     GUI/MapView.cpp \
     Requests/AircraftRequester.cpp \
+    Requests/AircraftTimer.cpp \
     Requests/MapRequester.cpp \
     main.cpp
 
@@ -28,6 +29,7 @@ HEADERS += \
     GUI/MapView.h \
     Requests/Aircraft.h \
     Requests/AircraftRequester.h \
+    Requests/AircraftTimer.h \
     Requests/MapRequester.h
 
 FORMS += \

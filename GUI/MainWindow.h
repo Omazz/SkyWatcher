@@ -6,9 +6,10 @@
 #include <QMainWindow>
 #include "Requests/MapRequester.h"
 #include "Requests/AircraftRequester.h"
-#include "GUI/AircraftInfoDialog.h"
-#include "GUI/AircraftInfoButton.h"
-#include "GUI/AircraftGraphicsItem.h"
+#include "Requests/AircraftTimer.h"
+#include "AircraftInfoDialog.h"
+#include "AircraftInfoButton.h"
+#include "AircraftGraphicsItem.h"
 #include "PriFiles/GeographicCoordsHandler/GeographicCoordsHandler.h"
 #include "AircraftScene.h"
 #include <QHash>
@@ -40,8 +41,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void setText(QString text);
-
     void onUpdateMap(QPixmap map, quint8 x, quint8 y);
 
     void onUpdateAircrafts(QVector<Aircraft> aircrafts);
@@ -56,13 +55,15 @@ private slots:
 
     void onClickOnAircrafts(QVector<QString> aircrafts);
 
+    void onClickOnField(quint8 zoomLevel, qreal x, qreal y);
+
 private:
     void drawFields();
 
     Ui::MainWindow* ui;
     MapRequester* m_mapRequester = nullptr;
     AircraftRequester* m_aircraftRequester = nullptr;
-
+    AircraftTimer* m_updateTimer = nullptr;
 
     AircraftScene* m_mainMapScene = nullptr;
     QGraphicsPixmapItem* m_mainMapImage = nullptr;

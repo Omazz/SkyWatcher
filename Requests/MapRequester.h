@@ -33,8 +33,6 @@ private slots:
     void finishReading();
 
 signals:
-    void updateData(QString data);
-
     void updateMap(QPixmap map, quint8 x, quint8 y);
 
 private:

@@ -14,6 +14,7 @@
 #include <QtCore>
 #include "PriFiles/GeographicCoordsHandler/GeographicCoordsHandler.h"
 #include "Aircraft.h"
+#include "AircraftTimer.h"
 
 class AircraftRequester : public QObject
 {
@@ -24,7 +25,7 @@ public:
     ~AircraftRequester();
 
 public slots:
-    void onClickOnField(quint8 zoomLevel, qreal x, qreal y);
+    void onGetAircraftsInField();
 
 private slots:
     void readData();

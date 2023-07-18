@@ -7,7 +7,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     m_mapRequester = new MapRequester(this);
-    connect(m_mapRequester, &MapRequester::updateData, this, &MainWindow::setText);
     m_aircraftRequester = new AircraftRequester(this);
 
     m_mainMapScene = new AircraftScene(this);
@@ -39,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_mainMapScene, &AircraftScene::clickOnAircrafts, this, &MainWindow::onClickOnAircrafts);
     connect(ui->GV_mainMap, &MapView::clickOnField, m_mapRequester, &MapRequester::onClickOnField);
-    connect(ui->GV_mainMap, &MapView::clickOnField, m_aircraftRequester, &AircraftRequester::onClickOnField);
+    connect(ui->GV_mainMap, &MapView::clickOnField, this, &MainWindow::onClickOnField);
     connect(ui->GV_mainMap, &MapView::changeMapToMain, this, &MainWindow::onChangeMapToMain);
     connect(m_mapRequester, &MapRequester::updateMap, this, &MainWindow::onUpdateMap);
     connect(m_aircraftRequester, &AircraftRequester::updateAircrafts, this, &MainWindow::onUpdateAircrafts);
@@ -49,18 +48,10 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-
-void MainWindow::setText(QString text) {
-    //ui->textBrowser->setText(text);
-}
-
 void MainWindow::onUpdateMap(QPixmap map, quint8 x, quint8 y) {
     if(m_fieldMapImage != nullptr) {
         return;
     }
-
-//    QPair<qreal, qreal> res = GeographicCoordsHandler::fromTilesToDegrees(x, y, ui->GV_mainMap->zoomLevel());
-//    qDebug() << res.first << res.second;
 
     ui->GV_mainMap->setIsField(true);
 
@@ -72,80 +63,126 @@ void MainWindow::onUpdateMap(QPixmap map, quint8 x, quint8 y) {
     m_fieldRect->setPen(QPen(Qt::red));
     m_overviewMapScene->addItem(m_fieldRect);
     m_mainMapScene->addItem(m_fieldMapImage);
-
 }
 
 void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
-    m_aircraftsItems.clear();
-    ui->TW_airplanes->clear();
-    ui->TW_airplanes->setRowCount(aircrafts.size());
-    ui->TW_airplanes->setColumnCount(3);
-    ui->TW_airplanes->setHorizontalHeaderItem(0, new QTableWidgetItem("ICAO 24"));
-    ui->TW_airplanes->setHorizontalHeaderItem(1, new QTableWidgetItem("Country"));
-    ui->TW_airplanes->setHorizontalHeaderItem(2, new QTableWidgetItem("Info"));
-
-
-    QPair<qreal, qreal> mapLeftTopPos = GeographicCoordsHandler::fromTilesToCartesian(m_mapRequester->argX(),
-                                                                                   m_mapRequester->argY(),
-                                                                                   ui->GV_mainMap->zoomLevel());
-    QPair<qreal, qreal> mapRightLowerPos = GeographicCoordsHandler::fromTilesToCartesian(m_mapRequester->argX() + 1,
-                                                                                         m_mapRequester->argY() + 1,
-                                                                                         ui->GV_mainMap->zoomLevel());
-
-    qDebug() << "\nMap left top point:\nx: " << static_cast<qint64>(mapLeftTopPos.first)
-             << "\ny: " << static_cast<qint64>(mapLeftTopPos.second);
-
-    qDebug() << "\nMap right lower point:\nx: " << static_cast<qint64>(mapRightLowerPos.first)
-             << "\ny: " << static_cast<qint64>(mapRightLowerPos.second);
-
-
-    for(int i = 0; i < aircrafts.size(); ++i) {
-
-
-        if(!aircrafts[i].longitude_isNull && !aircrafts[i].latitude_isNull) {
-
-            QPair<qreal, qreal> aircraftPoint = GeographicCoordsHandler::fromDegreesToTiles(aircrafts[i].longitude,
-                                                                                            aircrafts[i].latitude,
-                                                                                            ui->GV_mainMap->zoomLevel());
-            qreal mapX = 512.0 * (aircraftPoint.first - floor(aircraftPoint.first));
-            qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
-
-            if(!m_aircraftsItems.contains(aircrafts[i].icao24)) {
-                m_aircraftsItems.insert(aircrafts[i].icao24, AircraftGraphicsItem(aircrafts[i].icao24));
-            }
-
-            m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
-            if(!aircrafts[i].true_track_isNull) {
-                m_aircraftsItems[aircrafts[i].icao24].setRotation(aircrafts[i].true_track);
-            }
-            m_mainMapScene->addItem(&m_aircraftsItems[aircrafts[i].icao24]);
-        }
-        QTableWidgetItem* icaoItem = new QTableWidgetItem(aircrafts[i].icao24);
-
-        QTableWidgetItem* originCountryItem = new QTableWidgetItem(aircrafts[i].origin_country);
-
-        ui->TW_airplanes->setItem(i, 0, icaoItem);
-        ui->TW_airplanes->setItem(i, 1, originCountryItem);
-
-        AircraftInfoButton* aircraftInfoButton = new AircraftInfoButton();
-        aircraftInfoButton->setAircraft(aircrafts[i]);
-        aircraftInfoButton->setText("?");
-
-        connect(aircraftInfoButton, &QPushButton::clicked, this, &MainWindow::createAircraftInfoDialog);
-
-        ui->TW_airplanes->setCellWidget(i, 2, aircraftInfoButton);
-        ui->TW_airplanes->verticalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
-    }
-    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-}
-
-void MainWindow::onChangeMapToMain() {
-    if(m_fieldMapImage == nullptr) {
+    if(aircrafts.isEmpty() || !ui->GV_mainMap->isField()) {
         return;
     }
 
+    qDebug() << "void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts)";
+
+    if(ui->TW_airplanes->columnCount() != 3) {
+        ui->TW_airplanes->setColumnCount(3);
+        ui->TW_airplanes->setHorizontalHeaderItem(0, new QTableWidgetItem("ICAO 24"));
+        ui->TW_airplanes->setHorizontalHeaderItem(1, new QTableWidgetItem("Country"));
+        ui->TW_airplanes->setHorizontalHeaderItem(2, new QTableWidgetItem("Info"));
+    }
+    for(int i = 0; i < aircrafts.size(); ++i) {
+        if(!m_aircraftsItems.contains(aircrafts[i].icao24)) {
+            if(!aircrafts[i].longitude_isNull && !aircrafts[i].latitude_isNull) {
+                QPair<qreal, qreal> aircraftPoint =
+                        GeographicCoordsHandler::fromDegreesToTiles(aircrafts[i].longitude,
+                                                                    aircrafts[i].latitude,
+                                                                    ui->GV_mainMap->zoomLevel());
+
+                qreal mapX = 512.0 * (aircraftPoint.first - floor(aircraftPoint.first));
+                qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
+
+                m_aircraftsItems.insert(aircrafts[i].icao24, AircraftGraphicsItem(aircrafts[i].icao24));
+                m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
+
+                if(!aircrafts[i].true_track_isNull) {
+                    m_aircraftsItems[aircrafts[i].icao24].setRotation(aircrafts[i].true_track);
+                }
+
+                m_mainMapScene->addItem(&m_aircraftsItems[aircrafts[i].icao24]);
+            }
+
+            QTableWidgetItem* icaoItem = new QTableWidgetItem(aircrafts[i].icao24);
+            QTableWidgetItem* originCountryItem = new QTableWidgetItem(aircrafts[i].origin_country);
+            ui->TW_airplanes->insertRow(ui->TW_airplanes->rowCount());
+            ui->TW_airplanes->setItem(ui->TW_airplanes->rowCount() - 1, 0, icaoItem);
+            ui->TW_airplanes->setItem(ui->TW_airplanes->rowCount() - 1, 1, originCountryItem);
+            ui->TW_airplanes->verticalHeader()->setSectionResizeMode(ui->TW_airplanes->rowCount() - 1,
+                                                                     QHeaderView::Fixed);
+            AircraftInfoButton* aircraftInfoButton = new AircraftInfoButton();
+            aircraftInfoButton->setAircraft(aircrafts[i]);
+            aircraftInfoButton->setText("?");
+            connect(aircraftInfoButton, &QPushButton::clicked, this, &MainWindow::createAircraftInfoDialog);
+
+            ui->TW_airplanes->setCellWidget(ui->TW_airplanes->rowCount() - 1, 2, aircraftInfoButton);
+        } else {
+            if(!aircrafts[i].longitude_isNull && !aircrafts[i].latitude_isNull) {
+                QPair<qreal, qreal> aircraftPoint =
+                        GeographicCoordsHandler::fromDegreesToTiles(aircrafts[i].longitude,
+                                                                    aircrafts[i].latitude,
+                                                                    ui->GV_mainMap->zoomLevel());
+
+                qreal mapX = 512.0 * (aircraftPoint.first - floor(aircraftPoint.first));
+                qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
+
+                m_mainMapScene->removeItem(&m_aircraftsItems[aircrafts[i].icao24]);
+                m_aircraftsItems[aircrafts[i].icao24] = AircraftGraphicsItem(aircrafts[i].icao24);
+                m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
+
+                if(!aircrafts[i].true_track_isNull) {
+                    m_aircraftsItems[aircrafts[i].icao24].setRotation(aircrafts[i].true_track);
+                }
+
+                m_mainMapScene->addItem(&m_aircraftsItems[aircrafts[i].icao24]);
+            }
+            // Поиск в таблице нужного самолёта
+            for(int rowIndex = 0; rowIndex < ui->TW_airplanes->rowCount(); ++rowIndex) {
+                if(ui->TW_airplanes->item(rowIndex, 0)->text() == aircrafts[i].icao24) {
+                    QWidget* widget = ui->TW_airplanes->cellWidget(rowIndex, 2);
+                    if(widget) {
+                        AircraftInfoButton* aircraftInfoButton = dynamic_cast<AircraftInfoButton*>(widget);
+                        if(aircraftInfoButton) {
+                            qDebug() << "123";
+                            aircraftInfoButton->setAircraft(aircrafts[i]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < ui->TW_airplanes->rowCount(); ++i) {
+        bool seek = false;
+        QString currentIcao24 = ui->TW_airplanes->item(i, 0)->text();
+        for(int j = 0; j < aircrafts.size(); ++j) {
+            if(aircrafts[j].icao24 == currentIcao24) {
+                seek = true;
+                break;
+            }
+        }
+        if(!seek) {
+            m_mainMapScene->removeItem(&m_aircraftsItems[currentIcao24]);
+            m_aircraftsItems.remove(currentIcao24);
+            ui->TW_airplanes->removeRow(i);
+            i--;
+        }
+    }
+
+    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->TW_airplanes->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    m_mainMapScene->update();
+}
+
+void MainWindow::onChangeMapToMain() {
+    if(!m_fieldMapImage) {
+        return;
+    }
+
+    if(m_updateTimer) {
+        m_updateTimer->stop();
+        delete m_updateTimer;
+        m_updateTimer = nullptr;
+    }
+
+    m_aircraftsItems.clear();
     ui->TW_airplanes->clear();
     ui->TW_airplanes->setColumnCount(0);
     ui->TW_airplanes->setRowCount(0);
@@ -184,7 +221,6 @@ void MainWindow::on_SB_zoomLevel_valueChanged(int arg1) {
 void MainWindow::drawFields() {
     int zoomLevel = ui->SB_zoomLevel->value();
     ui->GV_mainMap->setZoomLevel(zoomLevel);
-    // Размеры и количество клеток
     int numCells = qPow(2, zoomLevel);
     int cellSize = MAIN_MAP_SIZE / numCells;
 
@@ -234,4 +270,16 @@ void MainWindow::onClickOnAircrafts(QVector<QString> aircrafts) {
         }
     }
 
+}
+
+void MainWindow::onClickOnField(quint8 zoomLevel, qreal x, qreal y) {
+    m_updateTimer = new AircraftTimer(this);
+    m_updateTimer->setZoomLevel(zoomLevel);
+    m_updateTimer->setX(x);
+    m_updateTimer->setY(y);
+    m_updateTimer->setTimerType(Qt::TimerType::PreciseTimer);
+    m_updateTimer->setInterval(15000);
+    connect(m_updateTimer, &QTimer::timeout,
+            m_aircraftRequester, &AircraftRequester::onGetAircraftsInField);
+    m_updateTimer->start();
 }

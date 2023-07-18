@@ -11,26 +11,30 @@ AircraftRequester::~AircraftRequester() {
 
 }
 
-void AircraftRequester::onClickOnField(quint8 zoomLevel, qreal x, qreal y) {
-    int argX = x / 512 * qPow(2, zoomLevel);
-    int argY = y / 512 * qPow(2, zoomLevel);
+void AircraftRequester::onGetAircraftsInField() {
+    QObject* object = sender();
+    if(object) {
+        AircraftTimer* timer = dynamic_cast<AircraftTimer*>(object);
+        if(timer) {
+            int argX = timer->x() / 512 * qPow(2, timer->zoomLevel());
+            int argY = timer->y() / 512 * qPow(2, timer->zoomLevel());
 
-    qDebug() << argX << argY;
+            QPair<qreal, qreal> firstCoord = GeographicCoordsHandler::fromTilesToDegrees(argX, argY, timer->zoomLevel());
+            QPair<qreal, qreal> secondCoord = GeographicCoordsHandler::fromTilesToDegrees(argX + 1, argY + 1, timer->zoomLevel());
+            qreal longitudeMin = firstCoord.first;
+            qreal latitudeMax = firstCoord.second;
+            qreal longitudeMax = secondCoord.first;
+            qreal latitudeMin = secondCoord.second;
 
-    QPair<qreal, qreal> firstCoord = GeographicCoordsHandler::fromTilesToDegrees(argX, argY, zoomLevel);
-    QPair<qreal, qreal> secondCoord = GeographicCoordsHandler::fromTilesToDegrees(argX + 1, argY + 1, zoomLevel);
-    qreal longitudeMin = firstCoord.first;
-    qreal latitudeMax = firstCoord.second;
-    qreal longitudeMax = secondCoord.first;
-    qreal latitudeMin = secondCoord.second;
+            QNetworkRequest req{QUrl(QString("https://opensky-network.org/api/states/all?lamin=%1&lomin=%2&lamax=%3&lomax=%4")
+                                     .arg(latitudeMin).arg(longitudeMin).arg(latitudeMax).arg(longitudeMax))};
 
-    QNetworkRequest req{QUrl(QString("https://opensky-network.org/api/states/all?lamin=%1&lomin=%2&lamax=%3&lomax=%4")
-                             .arg(latitudeMin).arg(longitudeMin).arg(latitudeMax).arg(longitudeMax))};
+            netReply = netManager->get(req);
 
-    netReply = netManager->get(req);
-
-    connect(netReply,&QNetworkReply::readyRead,this,&AircraftRequester::readData);
-    connect(netReply,&QNetworkReply::finished,this,&AircraftRequester::finishReading);
+            connect(netReply,&QNetworkReply::readyRead,this,&AircraftRequester::readData);
+            connect(netReply,&QNetworkReply::finished,this,&AircraftRequester::finishReading);
+        }
+    }
 }
 
 void AircraftRequester::readData()

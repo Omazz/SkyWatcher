@@ -32,7 +32,6 @@ void MapRequester::onClickOnField(quint8 zoomLevel, qreal x, qreal y) {
     clearValues();
     m_argX = x / 512. * qPow(2, zoomLevel);
     m_argY = y / 512. * qPow(2, zoomLevel);
-    qDebug() << zoomLevel << m_argX << m_argY;
 
     QNetworkRequest req{QUrl(QString("https://mt0.google.com/vt/lyrs=m&x=%1&y=%2&z=%3&hl=en").arg(m_argX).arg(m_argY).arg(zoomLevel))};
 
@@ -51,8 +50,6 @@ void MapRequester::finishReading()
     if(netReply->error() != QNetworkReply::NoError){
         qDebug() << "Error : " << netReply->errorString();
     }else{
-        qDebug() << "Success!";
-
         QImage image = QImage::fromData(dataBuffer, "PNG");
 
         if (image.isNull()) {

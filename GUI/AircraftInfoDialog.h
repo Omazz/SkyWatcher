@@ -15,7 +15,6 @@ class AircraftInfoDialog : public QDialog
 public:
     explicit AircraftInfoDialog(QWidget *parent = nullptr);
 
-
     ~AircraftInfoDialog();
 
     void setAircraftInfo(const Aircraft& aircraft);
