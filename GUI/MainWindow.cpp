@@ -6,6 +6,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->PB_colorAicrafts->setStyleSheet(QString("background-color: %1; border: 2px solid black;").arg(m_colorAircrafts.name()));
+    ui->PB_colorAfterClick->setStyleSheet(QString("background-color: %1; border: 2px solid black;").arg(m_colorAfterClick.name()));
+    ui->TW_airplanes->setStyleSheet(QString("QTableWidget::item:selected { background-color: %1; color: %2 }")
+                                    .arg(m_colorAfterClick.name()).arg(getFontColor(m_colorAfterClick).name()));
+
     m_mapRequester = new MapRequester(this);
     m_aircraftRequester = new AircraftRequester(this);
 
@@ -24,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_overviewMapImage = new QGraphicsPixmapItem(pixmap.scaled(OVERVIEW_MAP_SIZE, OVERVIEW_MAP_SIZE, Qt::KeepAspectRatio));
     m_overviewMapScene->addItem(m_overviewMapImage);
 
-    // Устанавливаем размеры сцены
     m_mainMapScene->setSceneRect(0, 0, MAIN_MAP_SIZE, MAIN_MAP_SIZE);
 
     drawFields();
@@ -54,12 +59,15 @@ void MainWindow::onUpdateMap(QPixmap map, quint8 x, quint8 y) {
     }
 
     ui->GV_mainMap->setIsField(true);
+    ui->SB_zoomLevel->setEnabled(false);
+    ui->statusbar->showMessage("Press \"Space\" for return to main map.");
 
     m_fieldMapImage = new QGraphicsPixmapItem(map.scaled(MAIN_MAP_SIZE, MAIN_MAP_SIZE, Qt::KeepAspectRatio));
 
     m_overviewMapScene->removeItem(m_fieldRect);
     delete m_fieldRect;
-    m_fieldRect = new QGraphicsRectItem(QRectF(8*x, 8*y, 5, 5));
+    qreal coef = OVERVIEW_MAP_SIZE / qPow(2, ui->GV_mainMap->zoomLevel());
+    m_fieldRect = new QGraphicsRectItem(QRectF(coef*x, coef*y, coef - 3, coef - 3));
     m_fieldRect->setPen(QPen(Qt::red));
     m_overviewMapScene->addItem(m_fieldRect);
     m_mainMapScene->addItem(m_fieldMapImage);
@@ -89,7 +97,7 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
                 qreal mapX = 512.0 * (aircraftPoint.first - floor(aircraftPoint.first));
                 qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
 
-                m_aircraftsItems.insert(aircrafts[i].icao24, AircraftGraphicsItem(aircrafts[i].icao24));
+                m_aircraftsItems.insert(aircrafts[i].icao24, AircraftGraphicsItem(aircrafts[i].icao24, m_colorAircrafts));
                 m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
 
                 if(!aircrafts[i].true_track_isNull) {
@@ -123,7 +131,7 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
                 qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
 
                 m_mainMapScene->removeItem(&m_aircraftsItems[aircrafts[i].icao24]);
-                m_aircraftsItems[aircrafts[i].icao24] = AircraftGraphicsItem(aircrafts[i].icao24);
+                m_aircraftsItems[aircrafts[i].icao24] = AircraftGraphicsItem(aircrafts[i].icao24, m_colorAircrafts);
                 m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
 
                 if(!aircrafts[i].true_track_isNull) {
@@ -139,7 +147,6 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
                     if(widget) {
                         AircraftInfoButton* aircraftInfoButton = dynamic_cast<AircraftInfoButton*>(widget);
                         if(aircraftInfoButton) {
-                            qDebug() << "123";
                             aircraftInfoButton->setAircraft(aircrafts[i]);
                         }
                     }
@@ -182,6 +189,8 @@ void MainWindow::onChangeMapToMain() {
         m_updateTimer = nullptr;
     }
 
+    ui->SB_zoomLevel->setEnabled(true);
+    ui->statusbar->clearMessage();
     m_aircraftsItems.clear();
     ui->TW_airplanes->clear();
     ui->TW_airplanes->setColumnCount(0);
@@ -236,6 +245,10 @@ void MainWindow::drawFields() {
     }
 }
 
+QColor MainWindow::getFontColor(QColor backgroundColor) {
+    return ((backgroundColor.redF()*0.299) + (backgroundColor.greenF()*0.587) + (backgroundColor.blueF()*0.114)) < 0.5 ? Qt::white : Qt::black;
+}
+
 void MainWindow::createAircraftInfoDialog() {
     QObject* senderObject = sender();
     if (senderObject != nullptr) {
@@ -278,8 +291,63 @@ void MainWindow::onClickOnField(quint8 zoomLevel, qreal x, qreal y) {
     m_updateTimer->setX(x);
     m_updateTimer->setY(y);
     m_updateTimer->setTimerType(Qt::TimerType::PreciseTimer);
-    m_updateTimer->setInterval(15000);
+    m_updateTimer->setInterval(m_updateTime_msec);
     connect(m_updateTimer, &QTimer::timeout,
             m_aircraftRequester, &AircraftRequester::onGetAircraftsInField);
+    QMetaObject::invokeMethod(m_updateTimer, "timeout");
     m_updateTimer->start();
 }
+
+void MainWindow::on_PB_colorAicrafts_clicked() {
+    QColorDialog colorDialog(m_colorAircrafts, this);
+    colorDialog.exec();
+    QColor color = colorDialog.selectedColor();
+    if(color.isValid()) {
+        m_colorAircrafts = color;
+        ui->PB_colorAicrafts->setStyleSheet(QString("background-color: %1; border: 2px solid black;").arg(m_colorAircrafts.name()));
+
+    }
+}
+
+
+void MainWindow::on_PB_colorAfterClick_clicked() {
+    QColorDialog colorDialog(m_colorAfterClick, this);
+    colorDialog.exec();
+    QColor color = colorDialog.selectedColor();
+    if(color.isValid()) {
+        m_colorAfterClick = color;
+        ui->PB_colorAfterClick->setStyleSheet(QString("background-color: %1; border: 2px solid black;")
+                                              .arg(m_colorAfterClick.name()));
+        ui->TW_airplanes->setStyleSheet(QString("QTableWidget::item:selected { background-color: %1; color: %2 }")
+                                        .arg(m_colorAfterClick.name()).arg(getFontColor(m_colorAfterClick).name()));
+    }
+}
+
+
+void MainWindow::on_CB_timeUpdate_currentIndexChanged(int index) {
+    switch(index) {
+    case 0:
+        m_updateTime_msec = 15000;
+        break;
+    case 1:
+        m_updateTime_msec = 30000;
+        break;
+    case 2:
+        m_updateTime_msec = 60000;
+        break;
+    case 3:
+        m_updateTime_msec = 150000;
+        break;
+    case 4:
+        m_updateTime_msec = 300000;
+        break;
+    default:
+        m_updateTime_msec = 15000;
+        break;
+    }
+
+    if(m_updateTimer != nullptr) {
+        m_updateTimer->setInterval(m_updateTime_msec);
+    }
+}
+

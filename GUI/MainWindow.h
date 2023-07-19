@@ -12,6 +12,7 @@
 #include "AircraftGraphicsItem.h"
 #include "PriFiles/GeographicCoordsHandler/GeographicCoordsHandler.h"
 #include "AircraftScene.h"
+
 #include <QHash>
 #include <QGraphicsPixmapItem>
 #include <QJsonDocument>
@@ -23,10 +24,13 @@
 #include <QPainter>
 #include <QtCore>
 #include <QGraphicsPixmapItem>
+#include <QColorDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+
 
 class MainWindow : public QMainWindow
 {
@@ -57,13 +61,26 @@ private slots:
 
     void onClickOnField(quint8 zoomLevel, qreal x, qreal y);
 
+    void on_PB_colorAicrafts_clicked();
+
+    void on_PB_colorAfterClick_clicked();
+
+    void on_CB_timeUpdate_currentIndexChanged(int index);
+
 private:
     void drawFields();
 
+    QColor getFontColor(QColor backgroundColor);
+
     Ui::MainWindow* ui;
+
+    QColor m_colorAircrafts = Qt::red;
+    QColor m_colorAfterClick = Qt::green;
+
     MapRequester* m_mapRequester = nullptr;
     AircraftRequester* m_aircraftRequester = nullptr;
     AircraftTimer* m_updateTimer = nullptr;
+    quint64 m_updateTime_msec = 15000;
 
     AircraftScene* m_mainMapScene = nullptr;
     QGraphicsPixmapItem* m_mainMapImage = nullptr;

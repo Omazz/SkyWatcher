@@ -4,12 +4,15 @@ AircraftGraphicsItem::AircraftGraphicsItem() {
 
 }
 
-AircraftGraphicsItem::AircraftGraphicsItem(QString icao24) {
+AircraftGraphicsItem::AircraftGraphicsItem(QString icao24, QColor color) {
     m_icao24 = icao24;
+    m_color = color;
 }
 
 AircraftGraphicsItem::AircraftGraphicsItem(const AircraftGraphicsItem& other) {
     m_icao24 = other.m_icao24;
+    m_color = other.m_color;
+
 }
 
 QRectF AircraftGraphicsItem::boundingRect() const {
@@ -43,19 +46,30 @@ void AircraftGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIt
 
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::red);
+    painter->setBrush(m_color);
     painter->drawPath(path);
 }
 
 bool AircraftGraphicsItem::operator ==(const AircraftGraphicsItem& other) {
-    return m_icao24 == other.m_icao24;
+    return (m_color == other.m_color) && (m_color == other.m_color);
 }
 
 void AircraftGraphicsItem::operator =(const AircraftGraphicsItem& other) {
     m_icao24 = other.m_icao24;
+    m_color = other.m_color;
 }
 
 const QString &AircraftGraphicsItem::icao24() const
 {
     return m_icao24;
+}
+
+const QColor &AircraftGraphicsItem::color() const
+{
+    return m_color;
+}
+
+void AircraftGraphicsItem::setColor(const QColor &newColor)
+{
+    m_color = newColor;
 }

@@ -11,7 +11,7 @@ class AircraftGraphicsItem : public QGraphicsItem
 public:
     AircraftGraphicsItem();
 
-    AircraftGraphicsItem(QString icao24);
+    AircraftGraphicsItem(QString icao24, QColor color);
 
     AircraftGraphicsItem(const AircraftGraphicsItem& other);
 
@@ -26,8 +26,13 @@ public:
 
     const QString &icao24() const;
 
+    const QColor &color() const;
+
+    void setColor(const QColor &newColor);
+
 private:
     QString m_icao24;
+    QColor m_color;
     QGraphicsTextItem m_textItemIcao24;
 };
 
