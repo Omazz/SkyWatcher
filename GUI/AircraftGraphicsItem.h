@@ -11,7 +11,7 @@ class AircraftGraphicsItem : public QGraphicsItem
 public:
     AircraftGraphicsItem();
 
-    AircraftGraphicsItem(QString icao24, QColor color);
+    AircraftGraphicsItem(QString icao24, QColor color, bool isSelectedUser);
 
     AircraftGraphicsItem(const AircraftGraphicsItem& other);
 
@@ -30,10 +30,15 @@ public:
 
     void setColor(const QColor &newColor);
 
+
+
+    bool isSelectedUser() const;
+    void setIsSelectedUser(bool newIsSelectedUser);
+
 private:
     QString m_icao24;
     QColor m_color;
-    QGraphicsTextItem m_textItemIcao24;
+    bool m_isSelectedUser = false;
 };
 
 #endif // AIRCRAFTGRAPHICSITEM_H

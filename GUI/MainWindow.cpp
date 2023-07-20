@@ -78,8 +78,6 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
         return;
     }
 
-    qDebug() << "void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts)";
-
     if(ui->TW_airplanes->columnCount() != 3) {
         ui->TW_airplanes->setColumnCount(3);
         ui->TW_airplanes->setHorizontalHeaderItem(0, new QTableWidgetItem("ICAO 24"));
@@ -97,7 +95,7 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
                 qreal mapX = 512.0 * (aircraftPoint.first - floor(aircraftPoint.first));
                 qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
 
-                m_aircraftsItems.insert(aircrafts[i].icao24, AircraftGraphicsItem(aircrafts[i].icao24, m_colorAircrafts));
+                m_aircraftsItems.insert(aircrafts[i].icao24, AircraftGraphicsItem(aircrafts[i].icao24, m_colorAircrafts, false));
                 m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
 
                 if(!aircrafts[i].true_track_isNull) {
@@ -121,6 +119,7 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
 
             ui->TW_airplanes->setCellWidget(ui->TW_airplanes->rowCount() - 1, 2, aircraftInfoButton);
         } else {
+
             if(!aircrafts[i].longitude_isNull && !aircrafts[i].latitude_isNull) {
                 QPair<qreal, qreal> aircraftPoint =
                         GeographicCoordsHandler::fromDegreesToTiles(aircrafts[i].longitude,
@@ -130,8 +129,13 @@ void MainWindow::onUpdateAircrafts(QVector<Aircraft> aircrafts) {
                 qreal mapX = 512.0 * (aircraftPoint.first - floor(aircraftPoint.first));
                 qreal mapY = 512.0 * (aircraftPoint.second - floor(aircraftPoint.second));
 
+
                 m_mainMapScene->removeItem(&m_aircraftsItems[aircrafts[i].icao24]);
-                m_aircraftsItems[aircrafts[i].icao24] = AircraftGraphicsItem(aircrafts[i].icao24, m_colorAircrafts);
+
+                bool isSelectedUser = m_aircraftsItems[aircrafts[i].icao24].isSelectedUser();
+                m_aircraftsItems[aircrafts[i].icao24] = AircraftGraphicsItem(aircrafts[i].icao24,
+                                                                             isSelectedUser ? m_colorAfterClick : m_colorAircrafts,
+                                                                             isSelectedUser);
                 m_aircraftsItems[aircrafts[i].icao24].setPos(mapX, mapY);
 
                 if(!aircrafts[i].true_track_isNull) {
@@ -270,6 +274,21 @@ void MainWindow::onAircraftInfoDialogFinished(int result) {
 }
 
 void MainWindow::onClickOnAircrafts(QVector<QString> aircrafts) {
+
+    foreach(const QString& icao24, m_aircraftsItems.keys()) {
+        m_aircraftsItems[icao24].setColor(m_colorAircrafts);
+        m_aircraftsItems[icao24].setIsSelectedUser(false);
+    }
+
+    for(int i = 0; i < aircrafts.size(); ++i) {
+        if(m_aircraftsItems.contains(aircrafts[i])) {
+            m_aircraftsItems[aircrafts[i]].setColor(m_colorAfterClick);
+            m_aircraftsItems[aircrafts[i]].setIsSelectedUser(true);
+        }
+    }
+
+    m_mainMapScene->update();
+
     for(int rowIndex = 0; rowIndex < ui->TW_airplanes->rowCount(); ++rowIndex) {
         ui->TW_airplanes->item(rowIndex, 0)->setSelected(false);
         ui->TW_airplanes->item(rowIndex, 1)->setSelected(false);
@@ -314,13 +333,24 @@ void MainWindow::on_PB_colorAfterClick_clicked() {
     QColorDialog colorDialog(m_colorAfterClick, this);
     colorDialog.exec();
     QColor color = colorDialog.selectedColor();
+
     if(color.isValid()) {
         m_colorAfterClick = color;
         ui->PB_colorAfterClick->setStyleSheet(QString("background-color: %1; border: 2px solid black;")
                                               .arg(m_colorAfterClick.name()));
         ui->TW_airplanes->setStyleSheet(QString("QTableWidget::item:selected { background-color: %1; color: %2 }")
                                         .arg(m_colorAfterClick.name()).arg(getFontColor(m_colorAfterClick).name()));
+
+        foreach(const QString& icao24, m_aircraftsItems.keys()) {
+            if(m_aircraftsItems.contains(icao24)) {
+                if(m_aircraftsItems[icao24].isSelected()) {
+                    m_aircraftsItems[icao24].setColor(m_colorAfterClick);
+                }
+            }
+        }
     }
+
+    m_mainMapScene->update();
 }
 
 

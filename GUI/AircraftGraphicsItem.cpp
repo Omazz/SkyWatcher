@@ -4,15 +4,16 @@ AircraftGraphicsItem::AircraftGraphicsItem() {
 
 }
 
-AircraftGraphicsItem::AircraftGraphicsItem(QString icao24, QColor color) {
+AircraftGraphicsItem::AircraftGraphicsItem(QString icao24, QColor color, bool isSelectedUser) {
     m_icao24 = icao24;
     m_color = color;
+    m_isSelectedUser = isSelectedUser;
 }
 
 AircraftGraphicsItem::AircraftGraphicsItem(const AircraftGraphicsItem& other) {
     m_icao24 = other.m_icao24;
     m_color = other.m_color;
-
+    m_isSelectedUser = other.m_isSelectedUser;
 }
 
 QRectF AircraftGraphicsItem::boundingRect() const {
@@ -51,12 +52,13 @@ void AircraftGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIt
 }
 
 bool AircraftGraphicsItem::operator ==(const AircraftGraphicsItem& other) {
-    return (m_color == other.m_color) && (m_color == other.m_color);
+    return (m_icao24 == other.m_icao24);
 }
 
 void AircraftGraphicsItem::operator =(const AircraftGraphicsItem& other) {
     m_icao24 = other.m_icao24;
     m_color = other.m_color;
+    m_isSelectedUser = other.m_isSelectedUser;
 }
 
 const QString &AircraftGraphicsItem::icao24() const
@@ -73,3 +75,15 @@ void AircraftGraphicsItem::setColor(const QColor &newColor)
 {
     m_color = newColor;
 }
+
+bool AircraftGraphicsItem::isSelectedUser() const
+{
+    return m_isSelectedUser;
+}
+
+void AircraftGraphicsItem::setIsSelectedUser(bool newIsSelectedUser)
+{
+    m_isSelectedUser = newIsSelectedUser;
+}
+
+
