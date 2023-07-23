@@ -44,13 +44,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 TARGET = SkyWatcher
 
-DESTDIR = ../Build-SkyWatcher
+DESTDIR = ../SkyWatcher/Build-SkyWatcher
 
-OBJECTS_DIR = ../Build-SkyWatcher
+OBJECTS_DIR = ../SkyWatcher/Build-SkyWatcher
 
-MOC_DIR = ../Build-SkyWatcher
+MOC_DIR = ../SkyWatcher/Build-SkyWatcher
 
-UI_DIR = ../Build-SkyWatcher
+UI_DIR = ../SkyWatcher/Build-SkyWatcher
 
 DISTFILES += \
     Recources/LoadingScreen.jpg \
