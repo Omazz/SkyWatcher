@@ -41,6 +41,17 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+
+TARGET = SkyWatcher
+
+DESTDIR = ../Build-SkyWatcher
+
+OBJECTS_DIR = ../Build-SkyWatcher
+
+MOC_DIR = ../Build-SkyWatcher
+
+UI_DIR = ../Build-SkyWatcher
+
 DISTFILES += \
     Recources/LoadingScreen.jpg \
     Recources/Map.png \
