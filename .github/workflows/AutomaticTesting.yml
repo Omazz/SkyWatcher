@@ -1,0 +1,25 @@
+name: Automatic testing
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Install Qt
+      run: sudo apt install -y qtbase5-dev qt5-qmake
+    
+    - name: Get repository code
+      uses: actions/checkout@v3
+
+    - name: Build qmake-file 
+      run: qmake SkyWatcher.pro    
+    
+    - name: Compile 
+      run: make
