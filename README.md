@@ -32,6 +32,6 @@ __SkyWatcher__ представляет собой программное обе
 
 ![Image was not found!](GitHubImages/table.png)
 
-
+При нажатии на кнопку в строке таблицы, соответствующей интересующему пользователю судну, выводится окно с информацией о данном воздушном судне.
 
 ![Image was not found!](GitHubImages/aircraftInfo.png)
